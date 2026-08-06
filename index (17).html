@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Utilidad Real · NOVA 30 · Comunidades Hotmart</title>
+<meta name="description" content="Facturar no es ganar. Descubre cuánto queda realmente de tu GMV después de reembolsos, tarifas, impuestos, pauta y costos fijos.">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Simulador de Utilidad Real · NOVA 30">
+<meta property="og:description" content="Facturar no es ganar. Descubre cuánto queda realmente de tu GMV.">
+<meta property="og:image" content="https://assets.hotmartcomunidades.com/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Favicon -->
+<link rel="icon" href="https://assets.hotmartcomunidades.com/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="https://assets.hotmartcomunidades.com/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="https://assets.hotmartcomunidades.com/apple-touch-icon.png">
+<link rel="manifest" href="https://assets.hotmartcomunidades.com/site.webmanifest">
+
+<!-- Marca -->
+<link rel="stylesheet" href="https://assets.hotmartcomunidades.com/brand.css">
+<link rel="stylesheet" href="https://assets.hotmartcomunidades.com/components.css">
+<link rel="stylesheet" href="https://assets.hotmartcomunidades.com/tiers/nova30.css">
+
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--ink); color:#fff;
+    font-family:var(--font-body); font-weight:400;
+    -webkit-font-smoothing:antialiased; line-height:1.55;
+  }
+  img{max-width:100%; display:block}
+  a{color:inherit}
+
+  /* ---------- NAV ---------- */
+  .nav{position:sticky; top:0; z-index:50; display:flex; align-items:center;
+       justify-content:space-between; padding:14px 24px}
+  .nav img{height:26px}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; overflow:hidden; padding:clamp(52px,9vw,104px) 0 clamp(40px,6vw,72px)}
+  .hero::after{
+    content:""; position:absolute; inset:auto 0 -40% 0; height:70%; pointer-events:none;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(255,64,0,.16), transparent 70%);
+  }
+  .hero .container{position:relative; z-index:2}
+  .hero-copy .display-xl{font-size:clamp(2.9rem,8.5vw,5.4rem); max-width:14ch}
+  .lede{color:rgba(255,255,255,.62); font-size:clamp(15px,1.7vw,18px); max-width:56ch; margin:18px 0 0}
+
+  /* ---------- CALCULADORA ---------- */
+  .calc{display:grid; grid-template-columns:minmax(0,380px) minmax(0,1fr); gap:22px; align-items:start}
+  @media(max-width:940px){ .calc{grid-template-columns:1fr} }
+
+  .field{margin-bottom:22px}
+  .field:last-of-type{margin-bottom:0}
+  .field label{display:block; font-size:13px; font-weight:700; letter-spacing:.02em; margin-bottom:3px}
+  .field .hint{display:block; font-size:12px; color:rgba(255,255,255,.45); margin-bottom:9px}
+  .inputwrap{position:relative}
+  .inputwrap .pre{position:absolute; left:14px; top:50%; transform:translateY(-50%);
+                  color:rgba(255,255,255,.4); font-size:15px; pointer-events:none}
+  input[type=text]{
+    width:100%; background:rgba(255,255,255,.04); color:#fff;
+    border:1px solid rgba(255,255,255,.14); border-radius:var(--r-sharp);
+    padding:14px 14px 14px 32px; font-family:var(--font-body); font-size:17px; font-weight:700;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  input[type=text]:focus{outline:none; border-color:var(--hot-orange);
+                         box-shadow:0 0 0 3px rgba(255,64,0,.16)}
+  input.pct{padding-left:14px; padding-right:32px}
+  .inputwrap .post{position:absolute; right:14px; top:50%; transform:translateY(-50%);
+                   color:rgba(255,255,255,.4); font-size:15px; pointer-events:none}
+
+  details.adv{margin-top:24px; border-top:1px solid rgba(255,255,255,.09); padding-top:18px}
+  details.adv summary{cursor:pointer; font-size:13px; font-weight:700; color:rgba(255,255,255,.6);
+                      list-style:none}
+  details.adv summary::-webkit-details-marker{display:none}
+  details.adv summary::before{content:"+ "; color:var(--hot-orange)}
+  details.adv[open] summary::before{content:"− "; color:var(--hot-orange)}
+  details.adv .field{margin-top:20px}
+
+  /* ---------- CASCADA ---------- */
+  .waterfall{display:flex; flex-direction:column; gap:12px; margin-top:6px}
+  .wf-row{display:grid; grid-template-columns:1fr auto; gap:14px; align-items:baseline}
+  .wf-name{font-size:13.5px; color:rgba(255,255,255,.72)}
+  .wf-val{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums}
+  .wf-bar{grid-column:1/-1; height:12px; border-radius:2px; background:rgba(255,255,255,.05);
+          overflow:hidden; margin-top:-4px; position:relative}
+  .wf-fill{position:absolute; top:0; height:100%; border-radius:2px;
+           transition:width .45s cubic-bezier(.2,.8,.2,1), left .45s cubic-bezier(.2,.8,.2,1);
+           background:rgba(255,255,255,.20); left:0}
+  .wf-row.deduct .wf-name{color:rgba(255,255,255,.42); font-size:12.5px}
+  .wf-row.deduct .wf-val{color:var(--hot-orange); font-size:13px; font-weight:400}
+  .wf-row.deduct .wf-fill{background:linear-gradient(90deg,var(--lava-deep),var(--lava)); opacity:.5}
+  .wf-row.final .wf-name{color:#fff; font-weight:700; font-size:15px}
+  .wf-row.final .wf-val{color:var(--hot-orange); font-size:clamp(24px,3.4vw,34px);
+                        font-family:var(--font-display); font-weight:400}
+  .wf-row.final .wf-fill{background:linear-gradient(90deg,var(--lava-deep),var(--lava));
+                         box-shadow:0 0 18px rgba(255,64,0,.6)}
+  .wf-sep{height:1px; background:rgba(255,255,255,.09); margin:6px 0}
+
+  /* ---------- MÉTRICAS ---------- */
+  .metrics{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:24px}
+  .metric{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08);
+          border-radius:var(--r-card); padding:16px 18px}
+  .metric .k{font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+             color:rgba(255,255,255,.42)}
+  .metric .v{font-family:var(--font-display); font-size:clamp(22px,3vw,30px); line-height:1.15; margin-top:6px;
+             font-variant-numeric:tabular-nums}
+  .metric .n{font-size:11.5px; color:rgba(255,255,255,.42); margin-top:4px}
+  .metric.flag{border-color:rgba(255,64,0,.45); background:rgba(255,64,0,.06)}
+  .metric.flag .v{color:var(--hot-orange)}
+  .metric.good{border-color:rgba(198,198,206,.4)}
+
+  /* ---------- DIAGNÓSTICO ---------- */
+  #diag{margin-top:22px}
+  #diag h3{font-family:var(--font-display); font-weight:400; font-size:clamp(20px,2.6vw,26px);
+           margin:12px 0 8px; line-height:1.2}
+  #diag p{color:rgba(255,255,255,.62); font-size:14.5px; margin:0}
+  .actions{list-style:none; padding:0; margin:22px 0 0; display:grid; gap:12px}
+  .actions li{display:grid; grid-template-columns:auto 1fr; gap:13px; align-items:start;
+              font-size:14.5px; color:rgba(255,255,255,.8)}
+  .actions .dot-accent{margin-top:8px}
+
+  /* ---------- PUENTE ---------- */
+  .bridge{border-top:1px solid rgba(255,255,255,.08)}
+  .step-n{font-family:var(--font-display); font-size:34px; color:rgba(255,255,255,.16);
+          line-height:1; margin-bottom:14px}
+  .card h3{font-family:var(--font-display); font-weight:400; font-size:22px; margin:0 0 10px; line-height:1.2}
+  .card p{margin:0; font-size:14.5px; color:rgba(255,255,255,.58)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid rgba(255,255,255,.08); padding:44px 0 60px}
+  .legal{font-size:12px; color:rgba(255,255,255,.34); max-width:78ch; line-height:1.7}
+  .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+
+  /* ---------- RESUMEN FIJO (solo móvil) ---------- */
+  .sticky{
+    position:fixed; left:0; right:0; bottom:0; z-index:60; display:none;
+    padding:13px 24px calc(13px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(255,255,255,.1);
+    justify-content:space-between; align-items:center; gap:16px;
+  }
+  .sticky .k{font-size:10.5px; font-weight:700; letter-spacing:.16em;
+             text-transform:uppercase; color:rgba(255,255,255,.42)}
+  .sticky .v{font-family:var(--font-display); font-size:25px; line-height:1.1;
+             color:var(--hot-orange); font-variant-numeric:tabular-nums}
+  .sticky .r{text-align:right}
+  .sticky .r .v{color:#fff; font-size:21px}
+  @media(max-width:940px){ .sticky{display:flex} body{padding-bottom:74px} }
+</style>
+</head>
+<body>
+
+<nav class="nav container">
+  <img src="https://assets.hotmartcomunidades.com/logos/hotmart-white.svg" alt="Hotmart">
+  <span class="badge-live"><span class="dot"></span>NOVA 30</span>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="grain"></div>
+  <div class="container">
+    <div class="hero-copy">
+      <p class="eyebrow">From Profit to Wealth · Masterclass NOVA 30</p>
+      <h1 class="display-xl" style="margin:14px 0 0">Facturar<br>no es <em>ganar.</em></h1>
+      <p class="lede">
+        Sabes perfectamente cuánto facturaste. La pregunta incómoda es cuánto te quedó.
+        Tres números y lo averiguas en treinta segundos.
+      </p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:28px">
+        <a class="btn lg" href="#calculadora">Correr mi número →</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= CALCULADORA ================= -->
+<main>
+<section class="section container" id="calculadora" style="padding-top:0">
+  <div class="calc">
+
+    <!-- INPUTS -->
+    <div class="card card--lg">
+      <p class="eyebrow">Tus tres números</p>
+      <h2 class="display-title" style="font-size:1.5rem; margin:10px 0 26px">Llena esto</h2>
+
+      <div class="field">
+        <label for="gmv">GMV del periodo</label>
+        <span class="hint">Alcanzado o proyectado, en USD.</span>
+        <div class="inputwrap">
+          <span class="pre">$</span>
+          <input type="text" id="gmv" inputmode="numeric" value="1,000,000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="ads">Inversión en tráfico pago</label>
+        <span class="hint">Todo lo que gastaste en ads en ese periodo.</span>
+        <div class="inputwrap">
+          <span class="pre">$</span>
+          <input type="text" id="ads" inputmode="numeric" value="400,000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="opex">Costos fijos (OPEX)</label>
+        <span class="hint">Nómina, freelancers, herramientas, oficina.</span>
+        <div class="inputwrap">
+          <span class="pre">$</span>
+          <input type="text" id="opex" inputmode="numeric" value="250,000">
+        </div>
+      </div>
+
+      <details class="adv">
+        <summary>Ajustar supuestos</summary>
+        <div class="field">
+          <label for="tax">Impuesto estimado</label>
+          <span class="hint">10% es solo un default. Pon tu tasa real.</span>
+          <div class="inputwrap">
+            <input class="pct" type="text" id="tax" inputmode="decimal" value="10">
+            <span class="post">%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fee">Tarifa Hotmart</label>
+          <span class="hint">Déjala vacía para usar el promedio general (9.9%).</span>
+          <div class="inputwrap">
+            <input class="pct" type="text" id="fee" inputmode="decimal" placeholder="9.9">
+            <span class="post">%</span>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:18px">
+          Reembolsos y chargebacks se aplican con el promedio de plataforma: 4.5%.
+        </p>
+      </details>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div>
+      <div class="card card--lg">
+        <p class="eyebrow">De tu GMV a tu bolsillo</p>
+        <h2 class="sr">Cascada de utilidad real</h2>
+
+        <div class="waterfall" style="margin-top:20px">
+          <div class="wf-row">
+            <span class="wf-name">GMV facturado</span>
+            <span class="wf-val" id="o-gmv">$1,000,000</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-gmv" style="width:100%"></div></div>
+          </div>
+          <div class="wf-row deduct">
+            <span class="wf-name">Reembolsos y chargebacks (4.5%)</span>
+            <span class="wf-val" id="o-rc">−$45,000</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-rc"></div></div>
+          </div>
+          <div class="wf-row deduct">
+            <span class="wf-name">Tarifa Hotmart</span>
+            <span class="wf-val" id="o-fee">−$94,545</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-fee"></div></div>
+          </div>
+          <div class="wf-row deduct">
+            <span class="wf-name">Impuestos</span>
+            <span class="wf-val" id="o-tax">−$95,500</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-tax"></div></div>
+          </div>
+          <div class="wf-sep"></div>
+          <div class="wf-row">
+            <span class="wf-name">Ingreso neto</span>
+            <span class="wf-val" id="o-net">$764,955</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-net"></div></div>
+          </div>
+          <div class="wf-row deduct">
+            <span class="wf-name">Tráfico pago</span>
+            <span class="wf-val" id="o-ads">−$400,000</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-ads"></div></div>
+          </div>
+          <div class="wf-row deduct">
+            <span class="wf-name">Costos fijos (OPEX)</span>
+            <span class="wf-val" id="o-opex">−$250,000</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-opex"></div></div>
+          </div>
+          <div class="wf-sep"></div>
+          <div class="wf-row final">
+            <span class="wf-name">Utilidad real</span>
+            <span class="wf-val" id="o-profit">$114,955</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-profit"></div></div>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric" id="m-margin">
+            <div class="k">Margen</div>
+            <div class="v" id="o-margin">11.5%</div>
+            <div class="n">Sano: 10–20%+</div>
+          </div>
+          <div class="metric" id="m-roi">
+            <div class="k">ROI real</div>
+            <div class="v" id="o-roi">17.7%</div>
+            <div class="n">Por cada dólar invertido</div>
+          </div>
+          <div class="metric" id="m-traffic">
+            <div class="k">Peso ads</div>
+            <div class="v" id="o-traffic">40.0%</div>
+            <div class="n">Alerta arriba de 35%</div>
+          </div>
+          <div class="metric" id="m-opex">
+            <div class="k">Peso OPEX</div>
+            <div class="v" id="o-opexw">25.0%</div>
+            <div class="n">Alerta arriba de 25%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--lg card--accent card--active" id="diag">
+        <span class="badge-accent" id="d-zone">Zona</span>
+        <h3 id="d-title">—</h3>
+        <p id="d-text">—</p>
+        <ul class="actions" id="d-actions"></ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= PUENTE ================= -->
+<section class="section container bridge">
+  <p class="eyebrow">Y ahora qué</p>
+  <h2 class="display-title" style="margin:14px 0 12px">La utilidad no es patrimonio <em>todavía.</em></h2>
+  <p class="lede" style="margin-bottom:40px">
+    Ese número de arriba sigue viviendo dentro del negocio. Convertirlo en algo tuyo son tres decisiones.
+  </p>
+
+  <div class="grid-auto">
+    <div class="card">
+      <div class="step-n">01</div>
+      <h3>Págate primero</h3>
+      <p>Un salario fijo transferido antes de cualquier gasto del negocio. Si depende de lo que sobra, no es salario — es azar.</p>
+    </div>
+    <div class="card">
+      <div class="step-n">02</div>
+      <h3>Construye el colchón</h3>
+      <p>Dos a tres meses de operación cubiertos antes de reinvertir agresivamente. Sin ese piso, ninguna inversión importa.</p>
+    </div>
+    <div class="card">
+      <div class="step-n">03</div>
+      <h3>Saca dinero del negocio</h3>
+      <p>Lo que se queda dentro no es patrimonio, es capital de trabajo. El interés compuesto solo corre afuera.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="sticky panel-blur" aria-hidden="true">
+  <div>
+    <div class="k">Utilidad real</div>
+    <div class="v" id="s-profit">$114,955</div>
+  </div>
+  <div class="r">
+    <div class="k">Margen</div>
+    <div class="v" id="s-margin">11.5%</div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <img src="https://assets.hotmartcomunidades.com/logos/nova30-white.png" alt="NOVA 30" style="height:30px; margin-bottom:22px">
+    <p class="legal">
+      Simulador de gestión con fines educativos, creado para la comunidad NOVA 30 de Hotmart.
+      Los porcentajes de reembolso, chargeback y tarifa de plataforma son promedios de referencia
+      y pueden no corresponder a las condiciones específicas de tu cuenta. Los resultados son
+      estimaciones a partir de los datos que tú ingresas y no constituyen asesoría fiscal,
+      contable ni de inversión. Ningún dato que escribas aquí se envía ni se guarda: todo el
+      cálculo ocurre en tu navegador.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===== EDITA AQUÍ — supuestos de plataforma ===== */
+  var REFUND_RATE    = 0.0398;  // tasa de reembolso promedio
+  var CHARGEBACK_RATE= 0.0052;  // tasa de chargeback promedio
+  var DEFAULT_FEE    = 0.099;   // tarifa Hotmart general
+  /* ================================================ */
+
+  var ZONES = {
+    red: {
+      zone:"Zona roja",
+      title:"Tu margen está abajo del 10%.",
+      text:"Una parte muy grande de tu ingreso se la están comiendo el costo de adquisición y los gastos operativos. Queda muy poco de utilidad real, y casi nada para construir patrimonio.",
+      actions:[
+        "Revisa tu ticket promedio. Order bumps y upsells diluyen tu costo por adquisición sin gastar un dólar más en ads.",
+        "Revisa la eficiencia del tráfico. Canales orgánicos o un programa de afiliados pueden traer compradores con costo controlado."
+      ]
+    },
+    ads: {
+      zone:"Dependencia de ads",
+      title:"Tu margen aguanta, pero el negocio vive de la pauta.",
+      text:"La inversión en tráfico pago representa un porcentaje alto de tu ingreso. Eso significa que tu resultado depende de que los anuncios sigan funcionando mes con mes.",
+      actions:[
+        "Monetiza la base que ya tienes: una oferta de backend high ticket a compradores previos genera ingreso con costo de ads casi cero.",
+        "Explora un evergreen híbrido. Convertir tus mejores activos de lanzamiento en un embudo automatizado estabiliza la caja."
+      ]
+    },
+    opex: {
+      zone:"Estructura pesada",
+      title:"Tus costos fijos se llevan una porción grande del ingreso.",
+      text:"Una estructura pesada aprieta el flujo de caja justo en los meses sin lanzamiento, que son la mayoría del año.",
+      actions:[
+        "Sube el valor de vida del cliente. Suscripción o acceso a comunidad generan ingreso recurrente que cubre los fijos.",
+        "Revisa tu portafolio: productos de ticket bajo y bajo mantenimiento pueden correr en automático entre campañas."
+      ]
+    },
+    green: {
+      zone:"Zona verde",
+      title:"Margen arriba del 20%. Operación eficiente.",
+      text:"Adquisición y costos fijos están controlados. Tienes base sólida para escalar — y, más importante, para empezar a sacar dinero del negocio hacia tu patrimonio.",
+      actions:[
+        "Con unit economics sólidos, considera expandirte a nuevos mercados con métodos de pago locales sobre ofertas ya probadas.",
+        "Escala el presupuesto de pauta de forma incremental, vigilando que el ROI real se mantenga en tu parámetro objetivo."
+      ]
+    },
+    ok: {
+      zone:"Balanceado",
+      title:"Tus métricas están en equilibrio.",
+      text:"Ni alarma ni holgura. Sigue monitoreando el costo de adquisición y busca mejoras marginales en tu escalera de valor.",
+      actions:[
+        "Mapea tu escalera de valor completa: productos en distintos rangos de precio para maximizar el valor de cada lead que ya pagaste.",
+        "Define desde ya qué porcentaje de la utilidad sale del negocio cada trimestre, antes de que el crecimiento se lo coma."
+      ]
+    }
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  var inputs = ["gmv","ads","opex","tax","fee"].map($);
+
+  function parseNum(el){
+    var v = (el.value || "").replace(/[^0-9.]/g,"");
+    if(v === "") return null;
+    var n = parseFloat(v);
+    return isNaN(n) ? null : n;
+  }
+  function fmtMoney(n){
+    return "$" + Math.round(n).toLocaleString("en-US");
+  }
+  function fmtPct(n){
+    return (n*100).toFixed(1) + "%";
+  }
+  function groupThousands(el){
+    var caretFromEnd = el.value.length - (el.selectionStart || 0);
+    var raw = el.value.replace(/[^0-9]/g,"");
+    if(raw === ""){ el.value = ""; return; }
+    el.value = parseInt(raw,10).toLocaleString("en-US");
+    var pos = Math.max(0, el.value.length - caretFromEnd);
+    try { el.setSelectionRange(pos,pos); } catch(e){}
+  }
+
+  // Coloca una barra: ancho proporcional y, para las deducciones,
+  // desplazada al punto exacto donde se recorta el saldo anterior.
+  function bar(id, value, max, offset){
+    var w = max > 0 ? Math.max(0, Math.min(100, (value/max)*100)) : 0;
+    var l = max > 0 ? Math.max(0, Math.min(100, ((offset||0)/max)*100)) : 0;
+    var el = $(id);
+    el.style.width = w + "%";
+    el.style.left  = l + "%";
+  }
+
+  function setFlag(id, on){
+    var el = $(id);
+    el.classList.toggle("flag", !!on);
+    el.classList.toggle("good", !on);
+  }
+
+  function compute(){
+    var gmv  = parseNum($("gmv"))  || 0;
+    var ads  = parseNum($("ads"))  || 0;
+    var opex = parseNum($("opex")) || 0;
+    var taxIn = parseNum($("tax"));
+    var feeIn = parseNum($("fee"));
+
+    var taxRate = (taxIn === null ? 10 : taxIn) / 100;
+    var feeRate = (feeIn === null ? DEFAULT_FEE*100 : feeIn) / 100;
+
+    var rc      = gmv * (REFUND_RATE + CHARGEBACK_RATE);
+    var valid   = gmv - rc;
+    var fee     = valid * feeRate;
+    var taxes   = valid * taxRate;
+    var net     = valid - fee - taxes;
+    var profit  = net - ads - opex;
+
+    var margin  = gmv > 0 ? profit / gmv : 0;
+    var roi     = (ads + opex) > 0 ? profit / (ads + opex) : 0;
+    var wAds    = gmv > 0 ? ads / gmv : 0;
+    var wOpex   = gmv > 0 ? opex / gmv : 0;
+
+    $("o-gmv").textContent    = fmtMoney(gmv);
+    $("o-rc").textContent     = "−" + fmtMoney(rc);
+    $("o-fee").textContent    = "−" + fmtMoney(fee);
+    $("o-tax").textContent    = "−" + fmtMoney(taxes);
+    $("o-net").textContent    = fmtMoney(net);
+    $("o-ads").textContent    = "−" + fmtMoney(ads);
+    $("o-opex").textContent   = "−" + fmtMoney(opex);
+    $("o-profit").textContent = fmtMoney(profit);
+
+    var scale = Math.max(gmv, 1);
+    var afterFee = valid - fee;
+    var afterAds = net - ads;
+    bar("b-gmv",    gmv, scale, 0);
+    bar("b-rc",     rc, scale, valid);
+    bar("b-fee",    fee, scale, afterFee);
+    bar("b-tax",    taxes, scale, net);
+    bar("b-net",    net, scale, 0);
+    bar("b-ads",    ads, scale, afterAds);
+    bar("b-opex",   opex, scale, Math.max(profit,0));
+    bar("b-profit", Math.max(profit,0), scale, 0);
+
+    $("o-margin").textContent  = fmtPct(margin);
+    $("o-roi").textContent     = fmtPct(roi);
+    $("o-traffic").textContent = fmtPct(wAds);
+    $("o-opexw").textContent   = fmtPct(wOpex);
+
+    setFlag("m-margin", margin < 0.10);
+    setFlag("m-roi", roi < 0);
+    setFlag("m-traffic", wAds > 0.35);
+    setFlag("m-opex", wOpex > 0.25);
+
+    var z;
+    if(margin < 0.10)                              z = ZONES.red;
+    else if(wAds > 0.35)                           z = ZONES.ads;
+    else if(wOpex > 0.25)                          z = ZONES.opex;
+    else if(margin >= 0.20)                        z = ZONES.green;
+    else                                           z = ZONES.ok;
+
+    $("s-profit").textContent = fmtMoney(profit);
+    $("s-margin").textContent = fmtPct(margin);
+
+    $("d-zone").textContent  = z.zone;
+    $("d-title").textContent = z.title;
+    $("d-text").textContent  = z.text;
+
+    var ul = $("d-actions");
+    ul.innerHTML = "";
+    z.actions.forEach(function(a){
+      var li = document.createElement("li");
+      var dot = document.createElement("span");
+      dot.className = "dot-accent";
+      var span = document.createElement("span");
+      span.textContent = a;
+      li.appendChild(dot); li.appendChild(span);
+      ul.appendChild(li);
+    });
+  }
+
+  ["gmv","ads","opex"].forEach(function(id){
+    $(id).addEventListener("input", function(){ groupThousands(this); compute(); });
+  });
+  ["tax","fee"].forEach(function(id){
+    $(id).addEventListener("input", compute);
+  });
+
+  compute();
+})();
+</script>
+</body>
+</html>
