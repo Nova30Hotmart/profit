@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulador de Utilidad Real · NOVA 30 · Comunidades Hotmart</title>
-<meta name="description" content="Facturar no es ganar. Descubre cuánto queda realmente de tu GMV después de reembolsos, tarifas, impuestos, pauta y costos fijos.">
+<meta name="description" content="Facturar no es ganar. Descubre cuánto queda realmente de tu GMV después de reembolsos, costos variables, pauta y costos fijos.">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -39,7 +39,8 @@
 
   /* ---------- NAV ---------- */
   .nav{position:sticky; top:0; z-index:50; display:flex; align-items:center;
-       justify-content:space-between; padding:14px 24px}
+       justify-content:space-between; padding:14px 24px;
+       background:var(--ink); border-bottom:1px solid rgba(255,255,255,.08)}
   .nav img{height:26px}
 
   /* ---------- HERO ---------- */
@@ -48,9 +49,38 @@
     content:""; position:absolute; inset:auto 0 -40% 0; height:70%; pointer-events:none;
     background:radial-gradient(60% 100% at 50% 100%, rgba(255,64,0,.16), transparent 70%);
   }
-  .hero .container{position:relative; z-index:2}
-  .hero-copy .display-xl{font-size:clamp(2.9rem,8.5vw,5.4rem); max-width:14ch}
-  .lede{color:rgba(255,255,255,.62); font-size:clamp(15px,1.7vw,18px); max-width:56ch; margin:18px 0 0}
+  .hero .container{position:relative; z-index:2; display:grid; gap:clamp(34px,5vw,54px);
+                   grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); align-items:center}
+  @media(max-width:940px){ .hero .container{grid-template-columns:1fr} }
+  .hero-copy .display-xl{font-size:clamp(2.7rem,7.4vw,4.8rem); max-width:14ch}
+
+  /* preview de la cascada en el hero */
+  .demo{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.09);
+        border-radius:var(--r-card); padding:24px 24px 26px}
+  .demo .eyebrow{font-size:10px}
+  .demo-rows{display:flex; flex-direction:column; gap:16px; margin-top:18px}
+  .demo-row{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:baseline}
+  .demo-row span{font-size:12.5px; color:rgba(255,255,255,.68)}
+  .demo-row b{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;
+              color:rgba(255,255,255,.9)}
+  .demo-bar{grid-column:1/-1; height:10px; border-radius:2px;
+            background:rgba(255,255,255,.05); overflow:hidden; margin-top:3px}
+  .demo-bar i{display:block; height:100%; width:0; border-radius:2px;
+              background:rgba(255,255,255,.2);
+              transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .demo-row.out b{color:var(--hot-orange); font-weight:400; font-size:14px}
+  .demo-row.out i{background:linear-gradient(90deg,var(--lava-deep),var(--lava)); opacity:.5}
+  .demo-row.win b{font-family:var(--font-display); font-weight:400;
+                  font-size:clamp(26px,3.2vw,34px); color:var(--hot-orange); line-height:1.1}
+  .demo-row.win i{background:linear-gradient(90deg,var(--lava-deep),var(--lava));
+                  box-shadow:0 0 18px rgba(255,64,0,.6)}
+  .demo-wrap{position:relative}
+  .demo-orb{position:absolute; top:-46px; right:-30px; width:clamp(78px,9vw,116px);
+            opacity:.5; pointer-events:none; z-index:1}
+  @media(max-width:940px){ .demo-orb{top:-34px; right:-8px; opacity:.35} }
+  .demo{position:relative; z-index:2}
+  .demo-note{font-size:11.5px; color:rgba(255,255,255,.5); margin:20px 0 0}
+  .lede{color:rgba(255,255,255,.75); font-size:clamp(15px,1.7vw,18px); max-width:56ch; margin:18px 0 0}
 
   /* ---------- CALCULADORA ---------- */
   .calc{display:grid; grid-template-columns:minmax(0,380px) minmax(0,1fr); gap:22px; align-items:start}
@@ -59,7 +89,7 @@
   .field{margin-bottom:22px}
   .field:last-of-type{margin-bottom:0}
   .field label{display:block; font-size:13px; font-weight:700; letter-spacing:.02em; margin-bottom:3px}
-  .field .hint{display:block; font-size:12px; color:rgba(255,255,255,.45); margin-bottom:9px}
+  .field .hint{display:block; font-size:12.5px; color:rgba(255,255,255,.62); margin-bottom:9px}
   .inputwrap{position:relative}
   .inputwrap .pre{position:absolute; left:14px; top:50%; transform:translateY(-50%);
                   color:rgba(255,255,255,.4); font-size:15px; pointer-events:none}
@@ -84,34 +114,62 @@
   details.adv .field{margin-top:20px}
 
   /* ---------- CASCADA ---------- */
-  .waterfall{display:flex; flex-direction:column; gap:12px; margin-top:6px}
-  .wf-row{display:grid; grid-template-columns:1fr auto; gap:14px; align-items:baseline}
-  .wf-name{font-size:13.5px; color:rgba(255,255,255,.72)}
-  .wf-val{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums}
-  .wf-bar{grid-column:1/-1; height:12px; border-radius:2px; background:rgba(255,255,255,.05);
-          overflow:hidden; margin-top:-4px; position:relative}
+  .waterfall{display:flex; flex-direction:column; gap:20px; margin-top:6px; position:relative}
+  .wf-marker{position:absolute; top:0; bottom:0; width:1px; pointer-events:none;
+             background:rgba(255,64,0,.42);
+             transition:left .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; opacity:0; z-index:3}
+  .wf-marker::after{content:attr(data-label); position:absolute; top:-15px; left:0;
+             transform:translateX(-50%); white-space:nowrap; font-size:9.5px; font-weight:700;
+             letter-spacing:.14em; text-transform:uppercase; color:rgba(255,64,0,.7)}
+  .calc:not(.waiting) .wf-marker{opacity:1}
+  .wf-marker.off{opacity:0 !important}
+  .wf-row{display:grid; grid-template-columns:1fr auto auto; gap:0 12px; align-items:baseline;
+          padding:4px 8px 6px; margin:0 -8px; border-radius:6px;
+          transition:background .25s ease}
+  .wf-row.lit{background:rgba(255,64,0,.07)}
+  .wf-pct{font-size:11.5px; font-variant-numeric:tabular-nums; color:rgba(255,255,255,.5);
+          letter-spacing:.02em}
+  .wf-name{font-size:13.5px; color:rgba(255,255,255,.86)}
+  .wf-val{grid-column:3}
+  .wf-val{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .wf-bar{grid-column:1/-1; height:10px; border-radius:2px; background:rgba(255,255,255,.05);
+          overflow:hidden; margin-top:10px; position:relative}
   .wf-fill{position:absolute; top:0; height:100%; border-radius:2px;
            transition:width .45s cubic-bezier(.2,.8,.2,1), left .45s cubic-bezier(.2,.8,.2,1);
            background:rgba(255,255,255,.20); left:0}
-  .wf-row.deduct .wf-name{color:rgba(255,255,255,.42); font-size:12.5px}
+  .wf-row.deduct .wf-name{color:rgba(255,255,255,.66); font-size:12.5px}
   .wf-row.deduct .wf-val{color:var(--hot-orange); font-size:13px; font-weight:400}
   .wf-row.deduct .wf-fill{background:linear-gradient(90deg,var(--lava-deep),var(--lava)); opacity:.5}
   .wf-row.final .wf-name{color:#fff; font-weight:700; font-size:15px}
-  .wf-row.final .wf-val{color:var(--hot-orange); font-size:clamp(24px,3.4vw,34px);
+  .wf-row.final .wf-val{color:var(--hot-orange); font-size:clamp(22px,3vw,32px);
                         font-family:var(--font-display); font-weight:400}
+  .wf-row.final .wf-bar{margin-top:14px}
   .wf-row.final .wf-fill{background:linear-gradient(90deg,var(--lava-deep),var(--lava));
                          box-shadow:0 0 18px rgba(255,64,0,.6)}
-  .wf-sep{height:1px; background:rgba(255,255,255,.09); margin:6px 0}
+  .wf-sep{height:1px; background:rgba(255,255,255,.09); margin:2px 0}
+
+  /* ---------- ESTADO EN ESPERA ---------- */
+  .waiting .wf-row.pending .wf-val{color:rgba(255,255,255,.28); font-weight:400}
+  .waiting .wf-row.pending.final .wf-val{color:rgba(255,255,255,.28)}
+  .waiting .wf-row.pending .wf-bar{background:transparent;
+        border:1px dashed rgba(255,255,255,.13); height:10px}
+  .waiting .wf-row.pending .wf-fill{opacity:0}
+  .waiting .metric{opacity:.4}
+  .waiting .metric .v{color:rgba(255,255,255,.4)}
+  #diag.awaiting{border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.03);
+                 box-shadow:none}
+  #diag.awaiting .badge-accent{background:rgba(255,255,255,.08); color:rgba(255,255,255,.6)}
 
   /* ---------- MÉTRICAS ---------- */
   .metrics{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:24px}
   .metric{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08);
           border-radius:var(--r-card); padding:16px 18px}
   .metric .k{font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
-             color:rgba(255,255,255,.42)}
-  .metric .v{font-family:var(--font-display); font-size:clamp(22px,3vw,30px); line-height:1.15; margin-top:6px;
+             color:rgba(255,255,255,.6)}
+  .metric .v{font-family:var(--font-display); font-size:clamp(20px,2.6vw,28px); line-height:1.15; margin-top:6px;
+             overflow-wrap:anywhere;
              font-variant-numeric:tabular-nums}
-  .metric .n{font-size:11.5px; color:rgba(255,255,255,.42); margin-top:4px}
+  .metric .n{font-size:11.5px; color:rgba(255,255,255,.58); margin-top:4px}
   .metric.flag{border-color:rgba(255,64,0,.45); background:rgba(255,64,0,.06)}
   .metric.flag .v{color:var(--hot-orange)}
   .metric.good{border-color:rgba(198,198,206,.4)}
@@ -120,7 +178,7 @@
   #diag{margin-top:22px}
   #diag h3{font-family:var(--font-display); font-weight:400; font-size:clamp(20px,2.6vw,26px);
            margin:12px 0 8px; line-height:1.2}
-  #diag p{color:rgba(255,255,255,.62); font-size:14.5px; margin:0}
+  #diag p{color:rgba(255,255,255,.76); font-size:14.5px; margin:0}
   .actions{list-style:none; padding:0; margin:22px 0 0; display:grid; gap:12px}
   .actions li{display:grid; grid-template-columns:auto 1fr; gap:13px; align-items:start;
               font-size:14.5px; color:rgba(255,255,255,.8)}
@@ -131,11 +189,22 @@
   .step-n{font-family:var(--font-display); font-size:34px; color:rgba(255,255,255,.16);
           line-height:1; margin-bottom:14px}
   .card h3{font-family:var(--font-display); font-weight:400; font-size:22px; margin:0 0 10px; line-height:1.2}
-  .card p{margin:0; font-size:14.5px; color:rgba(255,255,255,.58)}
+  .card p{margin:0; font-size:14.5px; color:rgba(255,255,255,.72)}
+
+
+  /* ---------- DESCARGO ---------- */
+  .legal-sec{border-top:1px solid rgba(255,255,255,.08)}
+  .legal-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+              gap:18px; margin-top:26px}
+  .legal-grid .card h4{font-family:var(--font-display); font-weight:400; font-size:17px;
+                       margin:0 0 8px; color:#fff}
+  .legal-grid .card p{font-size:13.5px; line-height:1.6; color:rgba(255,255,255,.66)}
+  .legal-pledge{margin-top:22px; border-left:2px solid var(--hot-orange); padding-left:16px;
+                font-size:13.5px; color:rgba(255,255,255,.72); max-width:72ch}
 
   /* ---------- FOOTER ---------- */
   footer{border-top:1px solid rgba(255,255,255,.08); padding:44px 0 60px}
-  .legal{font-size:12px; color:rgba(255,255,255,.34); max-width:78ch; line-height:1.7}
+  .legal{font-size:12px; color:rgba(255,255,255,.5); max-width:78ch; line-height:1.7}
   .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
 
   /* ---------- RESUMEN FIJO (solo móvil) ---------- */
@@ -146,19 +215,90 @@
     justify-content:space-between; align-items:center; gap:16px;
   }
   .sticky .k{font-size:10.5px; font-weight:700; letter-spacing:.16em;
-             text-transform:uppercase; color:rgba(255,255,255,.42)}
+             text-transform:uppercase; color:rgba(255,255,255,.6)}
   .sticky .v{font-family:var(--font-display); font-size:25px; line-height:1.1;
              color:var(--hot-orange); font-variant-numeric:tabular-nums}
   .sticky .r{text-align:right}
   .sticky .r .v{color:#fff; font-size:21px}
   @media(max-width:940px){ .sticky{display:flex} body{padding-bottom:74px} }
+
+  /* ---------- BOTÓN DE DESCARGA ---------- */
+  .dl{margin-top:18px; display:flex; flex-direction:column; gap:10px; align-items:flex-start}
+  .dl .btn[disabled]{opacity:.35; pointer-events:none}
+  .dl .hint{font-size:12px; color:rgba(255,255,255,.55)}
+
+  /* ---------- REPORTE IMPRIMIBLE ---------- */
+  #report{display:none}
+  @media print{
+    @page{ size:A4; margin:16mm 15mm; }
+    nav.nav, .hero, main, footer, .sticky, .grain{ display:none !important; }
+    html,body{ background:#fff !important; color:#111 !important; }
+    #report{
+      display:block; color:#111;
+      font-family:var(--font-body); font-size:10.5pt; line-height:1.5;
+    }
+    #report *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .rp-head{display:flex; justify-content:space-between; align-items:flex-start;
+             border-bottom:2px solid #F04E23; padding-bottom:10px; margin-bottom:26px}
+    .rp-logo{height:30px}
+    .rp-meta{text-align:right}
+    .rp-kicker{margin:0; font-size:8.5pt; font-weight:700; letter-spacing:.16em;
+               text-transform:uppercase; color:#F04E23}
+    .rp-date{margin:4px 0 0; font-size:9pt; color:#666}
+    .rp-h1{font-family:var(--font-display); font-weight:400; font-size:30pt;
+           line-height:1.05; margin:0 0 8px; color:#111}
+    .rp-lede{margin:0 0 24px; font-size:11pt; color:#444; max-width:62ch}
+    .rp-hero{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px;
+             border:1px solid #ddd; border-radius:8px; padding:16px 18px; background:#FAF8F7}
+    .rp-k{display:block; font-size:8pt; font-weight:700; letter-spacing:.14em;
+          text-transform:uppercase; color:#777; margin-bottom:5px}
+    .rp-big{font-family:var(--font-display); font-weight:400; font-size:22pt;
+            line-height:1.1; color:#F04E23}
+    .rp-zone{font-size:13pt; font-weight:700; color:#111; line-height:1.2}
+    .rp-h2{font-family:var(--font-display); font-weight:400; font-size:15pt;
+           margin:26px 0 10px; color:#111; border-bottom:1px solid #e4e4e4; padding-bottom:6px}
+    .rp-table{width:100%; border-collapse:collapse; margin:0}
+    .rp-table th, .rp-table td{padding:7px 4px; text-align:left; font-weight:400;
+                               border-bottom:1px solid #eee; font-size:10pt}
+    .rp-table td{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+    .rp-table td.rp-p{width:16%; color:#888; font-size:9pt}
+    .rp-table tr.out th, .rp-table tr.out td{color:#B23A18}
+    .rp-table tr.sub th, .rp-table tr.sub td{font-weight:700; border-top:1px solid #bbb}
+    .rp-table tr.tot th{font-weight:700; font-size:11.5pt}
+    .rp-table tr.tot td{font-weight:700; font-size:13pt; color:#F04E23}
+    .rp-bench th{width:24%; font-weight:700}
+    .rp-bench tr.hit th, .rp-bench tr.hit td{background:#FDEBE4; color:#B23A18; font-weight:700}
+    .rp-fine{font-size:8.5pt; color:#777; margin:8px 0 0}
+    .rp-diag{border-left:3px solid #F04E23; padding:2px 0 2px 16px}
+    .rp-diag h3{font-family:var(--font-display); font-weight:400; font-size:14pt; margin:0 0 6px}
+    .rp-diag p{margin:0 0 10px; color:#444}
+    .rp-diag ul{margin:0; padding-left:18px}
+    .rp-diag li{margin-bottom:7px}
+    .rp-steps, .rp-take{margin:0; padding-left:18px}
+    .rp-steps li{margin-bottom:12px}
+    .rp-steps strong{display:block; margin-bottom:2px}
+    .rp-take li{margin-bottom:6px}
+    .rp-task p{margin:0 0 14px}
+    .rp-blank{display:inline-block; min-width:180px; border-bottom:1px solid #bbb; height:1em}
+    .rp-blank.sm{min-width:52px}
+    .rp-blank.lg{min-width:100%}
+    .rp-fill{font-weight:700; color:#F04E23}
+    .rp-break{break-before:page; page-break-before:always}
+    .rp-foot{margin-top:30px; border-top:1px solid #ddd; padding-top:12px}
+    .rp-foot strong{font-size:8.5pt; letter-spacing:.1em; text-transform:uppercase; color:#777}
+    .rp-foot p{font-size:8pt; color:#888; line-height:1.5; margin:6px 0 0}
+    .rp-sign{font-style:italic}
+    .rp-h2, .rp-diag, .rp-steps li{break-inside:avoid}
+  }
+
 </style>
 </head>
 <body>
 
 <nav class="nav container">
-  <img src="https://assets.hotmartcomunidades.com/logos/hotmart-white.svg" alt="Hotmart">
-  <span class="badge-live"><span class="dot"></span>NOVA 30</span>
+  <img src="https://assets.hotmartcomunidades.com/logos/nova30-white.png" alt="NOVA 30"
+       style="height:24px">
+  <span class="badge-live"><span class="dot"></span>Simulador</span>
 </nav>
 
 <!-- ================= HERO ================= -->
@@ -166,7 +306,7 @@
   <div class="grain"></div>
   <div class="container">
     <div class="hero-copy">
-      <p class="eyebrow">From Profit to Wealth · Masterclass NOVA 30</p>
+      <p class="eyebrow text-accent">From Profit to Wealth · Masterclass NOVA 30</p>
       <h1 class="display-xl" style="margin:14px 0 0">Facturar<br>no es <em>ganar.</em></h1>
       <p class="lede">
         Sabes perfectamente cuánto facturaste. La pregunta incómoda es cuánto te quedó.
@@ -176,17 +316,43 @@
         <a class="btn lg" href="#calculadora">Correr mi número →</a>
       </div>
     </div>
+
+    <div class="demo-wrap">
+    <img class="orb orb--slow demo-orb" aria-hidden="true" alt=""
+         src="https://assets.hotmartcomunidades.com/orbs/orb-nova-white.png">
+    <div class="demo" id="demo" aria-hidden="true">
+      <p class="eyebrow">Un ejemplo</p>
+      <div class="demo-rows">
+        <div class="demo-row">
+          <span>GMV facturado</span>
+          <b id="h-gmv">$0</b>
+          <div class="demo-bar"><i id="hb-gmv"></i></div>
+        </div>
+        <div class="demo-row out">
+          <span>Se va en costos</span>
+          <b id="h-cost">$0</b>
+          <div class="demo-bar"><i id="hb-cost"></i></div>
+        </div>
+        <div class="demo-row win">
+          <span>Te queda</span>
+          <b id="h-profit">$0</b>
+          <div class="demo-bar"><i id="hb-profit"></i></div>
+        </div>
+      </div>
+      <p class="demo-note">Reembolsos, costos variables, pauta y estructura. Tu caso puede verse muy distinto.</p>
+    </div>
+    </div>
   </div>
 </header>
 
 <!-- ================= CALCULADORA ================= -->
 <main>
 <section class="section container" id="calculadora" style="padding-top:0">
-  <div class="calc">
+  <div class="calc waiting">
 
     <!-- INPUTS -->
     <div class="card card--lg">
-      <p class="eyebrow">Tus tres números</p>
+      <p class="eyebrow">Tus números</p>
       <h2 class="display-title" style="font-size:1.5rem; margin:10px 0 26px">Llena esto</h2>
 
       <div class="field">
@@ -208,7 +374,7 @@
       </div>
 
       <div class="field">
-        <label for="opex">Costos fijos (OPEX)</label>
+        <label for="opex">Costos fijos</label>
         <span class="hint">Nómina, freelancers, herramientas, oficina.</span>
         <div class="inputwrap">
           <span class="pre">$</span>
@@ -216,28 +382,26 @@
         </div>
       </div>
 
-      <details class="adv">
-        <summary>Ajustar supuestos</summary>
-        <div class="field">
-          <label for="tax">Impuesto estimado</label>
-          <span class="hint">10% es solo un default. Pon tu tasa real.</span>
-          <div class="inputwrap">
-            <input class="pct" type="text" id="tax" inputmode="decimal" value="10">
-            <span class="post">%</span>
-          </div>
+      <div class="field">
+        <label for="varcost">Costos variables</label>
+        <span class="hint">
+          Todo lo que se lleva un porcentaje de cada venta antes de que el dinero
+          llegue a ti. Pon tu porcentaje real.
+        </span>
+        <div class="inputwrap">
+          <input class="pct" type="text" id="varcost" inputmode="decimal">
+          <span class="post">%</span>
         </div>
-        <div class="field">
-          <label for="fee">Tarifa Hotmart</label>
-          <span class="hint">Déjala vacía para usar el promedio general (9.9%).</span>
-          <div class="inputwrap">
-            <input class="pct" type="text" id="fee" inputmode="decimal" placeholder="9.9">
-            <span class="post">%</span>
-          </div>
+      </div>
+
+      <div class="field">
+        <label for="rcpct">Reembolsos y chargebacks</label>
+        <span class="hint">Empieza en el promedio de la plataforma. Ajústalo al tuyo.</span>
+        <div class="inputwrap">
+          <input class="pct" type="text" id="rcpct" inputmode="decimal" value="4.5">
+          <span class="post">%</span>
         </div>
-        <p class="hint" style="margin-top:18px">
-          Reembolsos y chargebacks se aplican con el promedio de plataforma: 4.5%.
-        </p>
-      </details>
+      </div>
     </div>
 
     <!-- RESULTADOS -->
@@ -246,47 +410,43 @@
         <p class="eyebrow">De tu GMV a tu bolsillo</p>
         <h2 class="sr">Cascada de utilidad real</h2>
 
-        <div class="waterfall" style="margin-top:20px">
+        <div class="waterfall" style="margin-top:34px">
+          <div class="wf-marker" id="wf-marker" data-label="tu utilidad"></div>
           <div class="wf-row">
             <span class="wf-name">GMV facturado</span>
             <span class="wf-val" id="o-gmv">$1,000,000</span>
             <div class="wf-bar"><div class="wf-fill" id="b-gmv" style="width:100%"></div></div>
           </div>
           <div class="wf-row deduct">
-            <span class="wf-name">Reembolsos y chargebacks (4.5%)</span>
-            <span class="wf-val" id="o-rc">−$45,000</span>
+            <span class="wf-name">Reembolsos y chargebacks</span>
+            <span class="wf-pct" id="p-rc"></span><span class="wf-val" id="o-rc">−$45,000</span>
             <div class="wf-bar"><div class="wf-fill" id="b-rc"></div></div>
           </div>
-          <div class="wf-row deduct">
-            <span class="wf-name">Tarifa Hotmart</span>
-            <span class="wf-val" id="o-fee">−$94,545</span>
-            <div class="wf-bar"><div class="wf-fill" id="b-fee"></div></div>
-          </div>
-          <div class="wf-row deduct">
-            <span class="wf-name">Impuestos</span>
-            <span class="wf-val" id="o-tax">−$95,500</span>
-            <div class="wf-bar"><div class="wf-fill" id="b-tax"></div></div>
+          <div class="wf-row deduct pending">
+            <span class="wf-name">Costos variables</span>
+            <span class="wf-pct" id="p-var"></span><span class="wf-val" id="o-var">—</span>
+            <div class="wf-bar"><div class="wf-fill" id="b-var"></div></div>
           </div>
           <div class="wf-sep"></div>
-          <div class="wf-row">
+          <div class="wf-row pending">
             <span class="wf-name">Ingreso neto</span>
-            <span class="wf-val" id="o-net">$764,955</span>
+            <span class="wf-val" id="o-net">—</span>
             <div class="wf-bar"><div class="wf-fill" id="b-net"></div></div>
           </div>
-          <div class="wf-row deduct">
+          <div class="wf-row deduct pending">
             <span class="wf-name">Tráfico pago</span>
-            <span class="wf-val" id="o-ads">−$400,000</span>
+            <span class="wf-pct" id="p-ads"></span><span class="wf-val" id="o-ads">−$400,000</span>
             <div class="wf-bar"><div class="wf-fill" id="b-ads"></div></div>
           </div>
-          <div class="wf-row deduct">
-            <span class="wf-name">Costos fijos (OPEX)</span>
-            <span class="wf-val" id="o-opex">−$250,000</span>
+          <div class="wf-row deduct pending">
+            <span class="wf-name">Costos fijos</span>
+            <span class="wf-pct" id="p-opex"></span><span class="wf-val" id="o-opex">−$250,000</span>
             <div class="wf-bar"><div class="wf-fill" id="b-opex"></div></div>
           </div>
           <div class="wf-sep"></div>
-          <div class="wf-row final">
+          <div class="wf-row final pending">
             <span class="wf-name">Utilidad real</span>
-            <span class="wf-val" id="o-profit">$114,955</span>
+            <span class="wf-val" id="o-profit">—</span>
             <div class="wf-bar"><div class="wf-fill" id="b-profit"></div></div>
           </div>
         </div>
@@ -294,12 +454,12 @@
         <div class="metrics">
           <div class="metric" id="m-margin">
             <div class="k">Margen</div>
-            <div class="v" id="o-margin">11.5%</div>
+            <div class="v" id="o-margin">—</div>
             <div class="n">Sano: 10–20%+</div>
           </div>
           <div class="metric" id="m-roi">
             <div class="k">ROI real</div>
-            <div class="v" id="o-roi">17.7%</div>
+            <div class="v" id="o-roi">—</div>
             <div class="n">Por cada dólar invertido</div>
           </div>
           <div class="metric" id="m-traffic">
@@ -308,7 +468,7 @@
             <div class="n">Alerta arriba de 35%</div>
           </div>
           <div class="metric" id="m-opex">
-            <div class="k">Peso OPEX</div>
+            <div class="k">Peso costos fijos</div>
             <div class="v" id="o-opexw">25.0%</div>
             <div class="n">Alerta arriba de 25%</div>
           </div>
@@ -320,6 +480,11 @@
         <h3 id="d-title">—</h3>
         <p id="d-text">—</p>
         <ul class="actions" id="d-actions"></ul>
+      </div>
+
+      <div class="dl">
+        <button class="btn" id="pdf-btn" type="button" disabled>Descargar mi análisis en PDF</button>
+        <span class="hint" id="pdf-hint">Completa tus costos variables para habilitar la descarga.</span>
       </div>
     </div>
 
@@ -352,28 +517,179 @@
     </div>
   </div>
 </section>
+<!-- ================= DESCARGO ================= -->
+<section class="section container legal-sec">
+  <p class="eyebrow">NOVA 30 · Aviso legal y descargo de responsabilidad</p>
+  <h2 class="display-title" style="font-size:1.6rem; margin:12px 0 0; max-width:24ch">
+    Las informaciones compartidas son estrictamente educativas. No constituyen
+    recomendación ni asesoramiento financiero.
+  </h2>
+
+  <div class="legal-grid">
+    <div class="card">
+      <h4>Gestión y estrategia</h4>
+      <p>El contenido de este simulador, así como el de la masterclass que lo acompaña, se
+      destina única y exclusivamente a compartir información, ideas y casos de mercado bajo
+      una perspectiva de gestión y estrategia de negocios.</p>
+    </div>
+    <div class="card">
+      <h4>Límite de responsabilidad</h4>
+      <p>Este material no puede, bajo ninguna circunstancia, ser considerado o utilizado como
+      asesoramiento de planificación financiera, análisis de inversiones, consultoría
+      tributaria o recomendación de asignación de recursos.</p>
+    </div>
+    <div class="card">
+      <h4>Gestión de riesgos</h4>
+      <p>La gestión de finanzas e inversiones implica riesgos. Recomendamos expresamente que
+      busques asesoramiento profesional especializado y capacitado para la toma de decisiones
+      individuales o corporativas.</p>
+    </div>
+  </div>
+
+  <p class="legal-pledge">
+    Compromiso NOVA 30: fomentar el ecosistema con educación ejecutiva de alto nivel,
+    respetando la autonomía y la individualidad de cada negocio.
+  </p>
+</section>
 </main>
+
 
 <div class="sticky panel-blur" aria-hidden="true">
   <div>
     <div class="k">Utilidad real</div>
-    <div class="v" id="s-profit">$114,955</div>
+    <div class="v" id="s-profit">—</div>
   </div>
   <div class="r">
     <div class="k">Margen</div>
-    <div class="v" id="s-margin">11.5%</div>
+    <div class="v" id="s-margin">—</div>
   </div>
 </div>
 
+
+<!-- ================= REPORTE IMPRIMIBLE ================= -->
+<section id="report" aria-hidden="true">
+  <header class="rp-head">
+    <img src="https://assets.hotmartcomunidades.com/logos/nova30-black.png" alt="NOVA 30" class="rp-logo">
+    <div class="rp-meta">
+      <p class="rp-kicker">From Profit to Wealth · Masterclass NOVA 30</p>
+      <p class="rp-date" id="r-date"></p>
+    </div>
+  </header>
+
+  <h1 class="rp-h1">Mi utilidad real</h1>
+  <p class="rp-lede">Facturar no es ganar. Esto es lo que quedó de tu GMV en el periodo que analizaste.</p>
+
+  <div class="rp-hero">
+    <div>
+      <span class="rp-k">Utilidad real</span>
+      <strong class="rp-big" id="r-profit">—</strong>
+    </div>
+    <div>
+      <span class="rp-k">Margen neto</span>
+      <strong class="rp-big" id="r-margin">—</strong>
+    </div>
+    <div>
+      <span class="rp-k">Diagnóstico</span>
+      <strong class="rp-zone" id="r-zone">—</strong>
+    </div>
+  </div>
+
+  <h2 class="rp-h2">De tu GMV a tu bolsillo</h2>
+  <table class="rp-table">
+    <tbody>
+      <tr><th>GMV facturado</th><td id="r-gmv">—</td><td class="rp-p" id="r-gmv-p"></td></tr>
+      <tr class="out"><th>Reembolsos y chargebacks</th><td id="r-rc">—</td><td class="rp-p" id="r-rc-p"></td></tr>
+      <tr class="out"><th>Costos variables</th><td id="r-var">—</td><td class="rp-p" id="r-var-p"></td></tr>
+      <tr class="sub"><th>Ingreso neto</th><td id="r-net">—</td><td class="rp-p"></td></tr>
+      <tr class="out"><th>Tráfico pago</th><td id="r-ads">—</td><td class="rp-p" id="r-ads-p"></td></tr>
+      <tr class="out"><th>Costos fijos</th><td id="r-opex">—</td><td class="rp-p" id="r-opex-p"></td></tr>
+      <tr class="tot"><th>Utilidad real</th><td id="r-profit2">—</td><td class="rp-p" id="r-margin-p"></td></tr>
+    </tbody>
+  </table>
+  <p class="rp-fine">La tercera columna es el peso de cada línea sobre tu GMV. ROI real sobre lo invertido en pauta y estructura: <span id="r-roi">—</span>.</p>
+
+  <h2 class="rp-h2">Tu lectura</h2>
+  <div class="rp-diag">
+    <h3 id="r-title">—</h3>
+    <p id="r-text">—</p>
+    <ul id="r-actions"></ul>
+  </div>
+
+  <h2 class="rp-h2">Dónde cae tu margen</h2>
+  <table class="rp-table rp-bench">
+    <tbody>
+      <tr id="bm-1"><th>Menos de 5%</th><td>Frágil — cualquier imprevisto te deja sin colchón</td></tr>
+      <tr id="bm-2"><th>5 a 10%</th><td>Funcional — poco margen de error</td></tr>
+      <tr id="bm-3"><th>10 a 20%</th><td>Sano — el piso que recomienda la mayoría de asesores</td></tr>
+      <tr id="bm-4"><th>20% o más</th><td>Fuerte — típico de negocios digitales maduros</td></tr>
+    </tbody>
+  </table>
+  <p class="rp-fine">Referencia de mercado: NYU Stern (Damodaran), Bluevine, TrueProfit 2026. Para un negocio digital, el margen bruto sano ronda 60%+ y el EBITDA sano 18–25%.</p>
+
+  <div class="rp-break"></div>
+
+  <h2 class="rp-h2">Antes de decidir qué hacer con esa utilidad</h2>
+  <ol class="rp-steps">
+    <li>
+      <strong>¿Tengo colchón operativo de 2 a 3 meses?</strong>
+      Es el mínimo para cubrir nómina y gastos operativos. Si no lo tienes, primero eso:
+      ninguna inversión importa sin ese piso.
+    </li>
+    <li>
+      <strong>¿Reinvertir rinde más que sacar el dinero?</strong>
+      Reinvierte cuando hay un retorno claro en producto o equipo — un lanzamiento por delante,
+      una contratación que destraba, un producto nuevo. Si no, el dividendo gana.
+    </li>
+    <li>
+      <strong>¿Mi salario refleja mi rol?</strong>
+      Si depende de lo que sobra, no es salario: es azar. Fíjalo por función, no por porcentaje
+      de participación, y transfiérelo antes que cualquier otro gasto del negocio.
+    </li>
+  </ol>
+
+  <h2 class="rp-h2">Mi tarea</h2>
+  <div class="rp-task">
+    <p>Mi margen neto actual es <span class="rp-fill" id="r-margin3">—</span>. ¿Está en el rango sano de 10 a 20%+?</p>
+    <p>Mi salario fijo mensual será de <span class="rp-blank"></span>, transferido el día <span class="rp-blank sm"></span> de cada mes.</p>
+    <p>Mi número de libertad financiera — gasto mensual × 300, regla del 4% — es <span class="rp-blank"></span>.</p>
+    <p>Cuánto puedo invertir cada mes fuera del negocio, empezando este mes: <span class="rp-blank"></span>.</p>
+    <p>El ajuste concreto que voy a hacer este trimestre en mi mezcla reinversión / colchón / dividendo:</p>
+    <p><span class="rp-blank lg"></span></p>
+  </div>
+
+  <h2 class="rp-h2">Cinco ideas para llevarte</h2>
+  <ol class="rp-take">
+    <li>Define por escrito cómo está armado tu negocio y cómo se reparte el valor.</li>
+    <li>Un margen neto sano, de 10% para arriba, no es opcional: es la base de todo lo demás.</li>
+    <li>Págate primero. Separa tus finanzas personales de las del negocio.</li>
+    <li>El tiempo invertido vale más que el monto. Empieza aunque sea pequeño.</li>
+    <li>Facturar es vanidad. El patrimonio que construyes es lo que se queda.</li>
+  </ol>
+
+  <footer class="rp-foot">
+    <strong>Aviso legal y descargo de responsabilidad</strong>
+    <p>Las informaciones compartidas son estrictamente educativas y no constituyen recomendación
+    ni asesoramiento financiero. Este material se destina única y exclusivamente a compartir
+    información, ideas y casos de mercado bajo una perspectiva de gestión y estrategia de negocios.
+    No puede, bajo ninguna circunstancia, ser considerado o utilizado como asesoramiento de
+    planificación financiera, análisis de inversiones, consultoría tributaria o recomendación de
+    asignación de recursos. La gestión de finanzas e inversiones implica riesgos: recomendamos
+    expresamente buscar asesoramiento profesional especializado para la toma de decisiones
+    individuales o corporativas. Los resultados de este simulador son estimaciones a partir de los
+    datos que tú ingresaste.</p>
+    <p class="rp-sign">Compromiso NOVA 30: fomentar el ecosistema con educación ejecutiva de alto
+    nivel, respetando la autonomía y la individualidad de cada negocio. · Hotmart NOVA 30</p>
+  </footer>
+</section>
+
 <footer>
   <div class="container">
-    <img src="https://assets.hotmartcomunidades.com/logos/nova30-white.png" alt="NOVA 30" style="height:30px; margin-bottom:22px">
+    <img src="https://assets.hotmartcomunidades.com/logos/hotmart-white.svg" alt="Hotmart" style="height:26px; margin-bottom:22px">
     <p class="legal">
       Simulador de gestión con fines educativos, creado para la comunidad NOVA 30 de Hotmart.
-      Los porcentajes de reembolso, chargeback y tarifa de plataforma son promedios de referencia
-      y pueden no corresponder a las condiciones específicas de tu cuenta. Los resultados son
-      estimaciones a partir de los datos que tú ingresas y no constituyen asesoría fiscal,
-      contable ni de inversión. Ningún dato que escribas aquí se envía ni se guarda: todo el
+      Los porcentajes precargados son promedios de referencia y pueden no corresponder a las
+      condiciones específicas de tu operación. Los resultados son estimaciones a partir de los
+      datos que tú ingresas. Ningún dato que escribas aquí se envía ni se guarda: todo el
       cálculo ocurre en tu navegador.
     </p>
   </div>
@@ -384,9 +700,7 @@
   "use strict";
 
   /* ===== EDITA AQUÍ — supuestos de plataforma ===== */
-  var REFUND_RATE    = 0.0398;  // tasa de reembolso promedio
-  var CHARGEBACK_RATE= 0.0052;  // tasa de chargeback promedio
-  var DEFAULT_FEE    = 0.099;   // tarifa Hotmart general
+  var RC_DEFAULT = 4.5;  // reembolsos + chargebacks, promedio de plataforma
   /* ================================================ */
 
   var ZONES = {
@@ -438,7 +752,7 @@
   };
 
   var $ = function(id){ return document.getElementById(id); };
-  var inputs = ["gmv","ads","opex","tax","fee"].map($);
+  var inputs = ["gmv","ads","opex","varcost","rcpct"].map($);
 
   function parseNum(el){
     var v = (el.value || "").replace(/[^0-9.]/g,"");
@@ -446,11 +760,49 @@
     var n = parseFloat(v);
     return isNaN(n) ? null : n;
   }
-  function fmtMoney(n){
-    return "$" + Math.round(n).toLocaleString("en-US");
+  var REDUCED = window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var _last = {}, _raf = {};
+
+  // Anima un número de su valor anterior al nuevo.
+  function setNum(id, value, fmt, prefix){
+    var el = $(id);
+    prefix = prefix || "";
+    var from = _last[id];
+    _last[id] = value;
+    if(_raf[id]){ cancelAnimationFrame(_raf[id]); _raf[id] = null; }
+    if(REDUCED || typeof from !== "number" || from === value){
+      el.textContent = prefix + fmt(value);
+      return;
+    }
+    var t0 = null, dur = 480;
+    function frame(t){
+      if(t0 === null) t0 = t;
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = prefix + fmt(from + (value - from) * e);
+      if(k < 1) _raf[id] = requestAnimationFrame(frame);
+    }
+    _raf[id] = requestAnimationFrame(frame);
   }
+  function clearNum(id){
+    if(_raf[id]){ cancelAnimationFrame(_raf[id]); _raf[id] = null; }
+    delete _last[id];
+    $(id).textContent = "—";
+  }
+
+  // El signo va antes del símbolo de moneda: −$249,180, no $−249,180.
+  function fmtMoney(n){
+    var r = Math.round(n);
+    var sign = r < 0 ? "−" : "";
+    return sign + "$" + Math.abs(r).toLocaleString("en-US");
+  }
+  // Porcentajes fuera de rango se topan para no romper la caja.
   function fmtPct(n){
-    return (n*100).toFixed(1) + "%";
+    var v = n * 100;
+    if(v >  999) return "+999%";
+    if(v < -999) return "−999%";
+    return (v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
   }
   function groupThousands(el){
     var caretFromEnd = el.value.length - (el.selectionStart || 0);
@@ -464,11 +816,15 @@
   // Coloca una barra: ancho proporcional y, para las deducciones,
   // desplazada al punto exacto donde se recorta el saldo anterior.
   function bar(id, value, max, offset){
-    var w = max > 0 ? Math.max(0, Math.min(100, (value/max)*100)) : 0;
     var l = max > 0 ? Math.max(0, Math.min(100, ((offset||0)/max)*100)) : 0;
+    var w = max > 0 ? Math.max(0, Math.min(100 - l, (value/max)*100)) : 0;
     var el = $(id);
     el.style.width = w + "%";
     el.style.left  = l + "%";
+  }
+
+  function pct(id, v, show){
+    $(id).textContent = show ? fmtPct(v) : "";
   }
 
   function setFlag(id, on){
@@ -481,17 +837,16 @@
     var gmv  = parseNum($("gmv"))  || 0;
     var ads  = parseNum($("ads"))  || 0;
     var opex = parseNum($("opex")) || 0;
-    var taxIn = parseNum($("tax"));
-    var feeIn = parseNum($("fee"));
+    var varIn = parseNum($("varcost"));
+    var ready = (varIn !== null);
 
-    var taxRate = (taxIn === null ? 10 : taxIn) / 100;
-    var feeRate = (feeIn === null ? DEFAULT_FEE*100 : feeIn) / 100;
+    var varRate = (varIn === null ? 0 : varIn) / 100;
 
-    var rc      = gmv * (REFUND_RATE + CHARGEBACK_RATE);
+    var rcIn    = parseNum($("rcpct"));
+    var rc      = gmv * ((rcIn === null ? RC_DEFAULT : rcIn) / 100);
     var valid   = gmv - rc;
-    var fee     = valid * feeRate;
-    var taxes   = valid * taxRate;
-    var net     = valid - fee - taxes;
+    var varcost = valid * varRate;
+    var net     = valid - varcost;
     var profit  = net - ads - opex;
 
     var margin  = gmv > 0 ? profit / gmv : 0;
@@ -499,36 +854,76 @@
     var wAds    = gmv > 0 ? ads / gmv : 0;
     var wOpex   = gmv > 0 ? opex / gmv : 0;
 
-    $("o-gmv").textContent    = fmtMoney(gmv);
-    $("o-rc").textContent     = "−" + fmtMoney(rc);
-    $("o-fee").textContent    = "−" + fmtMoney(fee);
-    $("o-tax").textContent    = "−" + fmtMoney(taxes);
-    $("o-net").textContent    = fmtMoney(net);
-    $("o-ads").textContent    = "−" + fmtMoney(ads);
-    $("o-opex").textContent   = "−" + fmtMoney(opex);
-    $("o-profit").textContent = fmtMoney(profit);
+    setNum("o-gmv",    gmv,     fmtMoney);
+    setNum("o-rc",     rc,      fmtMoney, "−");
+    setNum("o-ads",    ads,     fmtMoney, "−");
+    setNum("o-opex",   opex,    fmtMoney, "−");
+    if(ready){
+      setNum("o-var",    varcost, fmtMoney, "−");
+      setNum("o-net",    net,     fmtMoney);
+      setNum("o-profit", profit,  fmtMoney);
+    }
 
-    var scale = Math.max(gmv, 1);
-    var afterFee = valid - fee;
+    var scale = Math.max(gmv, rc + varcost + ads + opex, 1);
     var afterAds = net - ads;
     bar("b-gmv",    gmv, scale, 0);
     bar("b-rc",     rc, scale, valid);
-    bar("b-fee",    fee, scale, afterFee);
-    bar("b-tax",    taxes, scale, net);
+    bar("b-var",    varcost, scale, net);
     bar("b-net",    net, scale, 0);
     bar("b-ads",    ads, scale, afterAds);
     bar("b-opex",   opex, scale, Math.max(profit,0));
     bar("b-profit", Math.max(profit,0), scale, 0);
 
-    $("o-margin").textContent  = fmtPct(margin);
-    $("o-roi").textContent     = fmtPct(roi);
-    $("o-traffic").textContent = fmtPct(wAds);
-    $("o-opexw").textContent   = fmtPct(wOpex);
+    // Peso de cada línea sobre el GMV
+    pct("p-rc",   gmv > 0 ? rc/gmv : 0,   true);
+    pct("p-var",  gmv > 0 ? varcost/gmv : 0, ready);
+    pct("p-ads",  gmv > 0 ? ads/gmv : 0,  true);
+    pct("p-opex", gmv > 0 ? opex/gmv : 0, true);
+
+    setNum("o-traffic", wAds,  fmtPct);
+    setNum("o-opexw",   wOpex, fmtPct);
+    if(ready){
+      setNum("o-margin", margin, fmtPct);
+      setNum("o-roi",    roi,    fmtPct);
+    }
+
+    // Línea de referencia: dónde queda la utilidad sobre la escala.
+    var mk = $("wf-marker");
+    if(profit > 0 && scale > 0){
+      mk.style.left = Math.min(100, (profit/scale)*100) + "%";
+      mk.classList.remove("off");
+    } else {
+      mk.classList.add("off");
+    }
 
     setFlag("m-margin", margin < 0.10);
     setFlag("m-roi", roi < 0);
     setFlag("m-traffic", wAds > 0.35);
     setFlag("m-opex", wOpex > 0.25);
+
+    // Sin el % de costos variables no hay diagnóstico posible.
+    document.querySelector(".calc").classList.toggle("waiting", !ready);
+    $("diag").classList.toggle("awaiting", !ready);
+    $("pdf-btn").disabled = !ready;
+    $("pdf-hint").textContent = ready
+      ? "Se abre el diálogo de impresión: elige “Guardar como PDF”."
+      : "Completa tus costos variables para habilitar la descarga.";
+
+    var ul = $("d-actions");
+    ul.innerHTML = "";
+
+    if(!ready){
+      ["o-var","o-net","o-profit","o-margin","o-roi"].forEach(clearNum);
+      ["m-margin","m-roi","m-traffic","m-opex"].forEach(function(id){
+        $(id).classList.remove("flag","good");
+      });
+      clearNum("s-profit");
+      clearNum("s-margin");
+      $("d-zone").textContent  = "Falta un dato";
+      $("d-title").textContent = "¿Qué porcentaje se llevan tus costos variables?";
+      $("d-text").textContent  = "Comisiones, procesamiento de pago, impuestos y afiliados salen de cada venta antes que cualquier otra cosa. Sin ese número, la utilidad que verías aquí sería más alta que la real — y ese es justo el error que este simulador existe para evitar.";
+      return;
+    }
 
     var z;
     if(margin < 0.10)                              z = ZONES.red;
@@ -537,15 +932,13 @@
     else if(margin >= 0.20)                        z = ZONES.green;
     else                                           z = ZONES.ok;
 
-    $("s-profit").textContent = fmtMoney(profit);
-    $("s-margin").textContent = fmtPct(margin);
+    setNum("s-profit", profit, fmtMoney);
+    setNum("s-margin", margin, fmtPct);
 
     $("d-zone").textContent  = z.zone;
     $("d-title").textContent = z.title;
     $("d-text").textContent  = z.text;
 
-    var ul = $("d-actions");
-    ul.innerHTML = "";
     z.actions.forEach(function(a){
       var li = document.createElement("li");
       var dot = document.createElement("span");
@@ -555,14 +948,93 @@
       li.appendChild(dot); li.appendChild(span);
       ul.appendChild(li);
     });
+
+    fillReport({
+      gmv:gmv, rc:rc, varcost:varcost, net:net, ads:ads, opex:opex, profit:profit,
+      margin:margin, roi:roi, wAds:wAds, wOpex:wOpex, zone:z
+    });
+  }
+
+  // ---------- Reporte imprimible ----------
+  function fillReport(d){
+    var g = d.gmv > 0 ? d.gmv : 0;
+    function share(v){ return g > 0 ? fmtPct(v/g) : "—"; }
+
+    $("r-date").textContent = new Date().toLocaleDateString("es-MX",
+      { day:"numeric", month:"long", year:"numeric" });
+
+    $("r-gmv").textContent    = fmtMoney(d.gmv);
+    $("r-rc").textContent     = "−" + fmtMoney(d.rc);
+    $("r-var").textContent    = "−" + fmtMoney(d.varcost);
+    $("r-net").textContent    = fmtMoney(d.net);
+    $("r-ads").textContent    = "−" + fmtMoney(d.ads);
+    $("r-opex").textContent   = "−" + fmtMoney(d.opex);
+    $("r-profit").textContent = fmtMoney(d.profit);
+    $("r-profit2").textContent= fmtMoney(d.profit);
+
+    $("r-gmv-p").textContent    = g > 0 ? "100%" : "—";
+    $("r-rc-p").textContent     = share(d.rc);
+    $("r-var-p").textContent    = share(d.varcost);
+    $("r-ads-p").textContent    = share(d.ads);
+    $("r-opex-p").textContent   = share(d.opex);
+    $("r-margin-p").textContent = fmtPct(d.margin);
+
+    $("r-margin").textContent  = fmtPct(d.margin);
+    $("r-margin3").textContent = fmtPct(d.margin);
+    $("r-roi").textContent     = fmtPct(d.roi);
+    $("r-zone").textContent    = d.zone.zone;
+    $("r-title").textContent   = d.zone.title;
+    $("r-text").textContent    = d.zone.text;
+
+    var rul = $("r-actions");
+    rul.innerHTML = "";
+    d.zone.actions.forEach(function(a){
+      var li = document.createElement("li");
+      li.textContent = a;
+      rul.appendChild(li);
+    });
+
+    // Resalta el escalón de benchmark donde cae su margen.
+    var m = d.margin * 100;
+    var hit = m < 5 ? "bm-1" : m < 10 ? "bm-2" : m < 20 ? "bm-3" : "bm-4";
+    ["bm-1","bm-2","bm-3","bm-4"].forEach(function(id){
+      $(id).classList.toggle("hit", id === hit);
+    });
   }
 
   ["gmv","ads","opex"].forEach(function(id){
     $(id).addEventListener("input", function(){ groupThousands(this); compute(); });
   });
-  ["tax","fee"].forEach(function(id){
+  ["varcost","rcpct"].forEach(function(id){
     $(id).addEventListener("input", compute);
   });
+
+  // Al enfocar un campo, se ilumina su fila en la cascada.
+  var ROW = { gmv:"b-gmv", ads:"b-ads", opex:"b-opex", varcost:"b-var", rcpct:"b-rc" };
+  Object.keys(ROW).forEach(function(id){
+    var row = $(ROW[id]).closest(".wf-row");
+    $(id).addEventListener("focus", function(){ row.classList.add("lit"); });
+    $(id).addEventListener("blur",  function(){ row.classList.remove("lit"); });
+  });
+
+  // Preview del hero: se arma solo al cargar.
+  (function(){
+    var GMV = 1000000, COST = 885045, WIN = GMV - COST;
+    var seed = { "h-gmv":0, "h-cost":0, "h-profit":0 };
+    Object.keys(seed).forEach(function(id){ _last[id] = 0; });
+    function run(){
+      $("hb-gmv").style.width    = "100%";
+      $("hb-cost").style.width   = (COST/GMV*100).toFixed(1) + "%";
+      $("hb-profit").style.width = (WIN/GMV*100).toFixed(1) + "%";
+      setNum("h-gmv",    GMV,  fmtMoney);
+      setNum("h-cost",   COST, fmtMoney, "−");
+      setNum("h-profit", WIN,  fmtMoney);
+    }
+    if(REDUCED){ run(); return; }
+    setTimeout(run, 260);
+  })();
+
+  $("pdf-btn").addEventListener("click", function(){ window.print(); });
 
   compute();
 })();
